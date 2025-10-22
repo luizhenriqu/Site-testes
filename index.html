@@ -95,21 +95,21 @@
       button:active, label[for="document-upload"]:active {
         transform: scale(0.97);
       }
-      #edit-profile-modal, #edit-user-modal {
+      #edit-profile-modal, #edit-user-modal, #create-user-modal {
         opacity: 0;
         backdrop-filter: blur(0px);
         transition: opacity 0.2s ease, backdrop-filter 0.2s ease;
       }
-      #edit-profile-modal.modal-visible, #edit-user-modal.modal-visible {
+      #edit-profile-modal.modal-visible, #edit-user-modal.modal-visible, #create-user-modal.modal-visible {
         opacity: 1;
         backdrop-filter: blur(4px);
       }
-      #edit-profile-modal > div, #edit-user-modal > div {
+      #edit-profile-modal > div, #edit-user-modal > div, #create-user-modal > div {
         transform: scale(0.95);
         opacity: 0;
         transition: transform 0.2s ease, opacity 0.2s ease;
       }
-      #edit-profile-modal.modal-visible > div, #edit-user-modal.modal-visible > div {
+      #edit-profile-modal.modal-visible > div, #edit-user-modal.modal-visible > div, #create-user-modal.modal-visible > div {
         transform: scale(1);
         opacity: 1;
       }
@@ -210,6 +210,11 @@
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
             <line x1="10" y1="11" x2="10" y2="17"></line>
             <line x1="14" y1="11" x2="14" y2="17"></line>
+        </symbol>
+        
+        <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
         </symbol>
     </svg>
     
@@ -659,6 +664,43 @@
         </div>
     </div>
     
+    <div id="create-user-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center" style="display: none; z-index: 60;">
+        <div class="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-theme-text">Criar Novo Usuário</h3>
+                <button id="create-user-cancel" class="text-theme-text-muted hover:text-theme-text p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="create-user-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-theme-text-subtle mb-1">CPF (Login)</label>
+                    <input id="create-user-cpf" type="text" class="w-full px-3 py-2 border rounded-lg bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" placeholder="000.000.000-00" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-theme-text-subtle mb-1">Nome</label>
+                        <input id="create-user-nome" type="text" class="w-full px-3 py-2 border rounded-lg bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" placeholder="Ex: João" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-theme-text-subtle mb-1">Sobrenome</label>
+                        <input id="create-user-sobrenome" type="text" class="w-full px-3 py-2 border rounded-lg bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" placeholder="Ex: Silva" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-theme-text-subtle mb-1">Matrícula</label>
+                    <input id="create-user-matricula" type="text" class="w-full px-3 py-2 border rounded-lg bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" placeholder="Ex: 98765" />
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button id="create-user-cancel-2" type="button" class="px-4 py-2 rounded-lg border text-theme-text hover:bg-theme-card-alt border-theme-border">Cancelar</button>
+                    <button id="create-user-save" type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Criar Usuário</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <button id="devtools-icon" class="fixed bottom-4 right-4 bg-theme-primary shadow-lg rounded-full w-14 h-14 flex flex-col justify-center items-center space-y-1 z-50 p-3" style="display: none;">
         <span class="w-6 h-0.5 bg-white"></span>
         <span class="w-6 h-0.5 bg-white"></span>
@@ -687,7 +729,6 @@
                 </button>
             </div>
         </div>
-        
         <div>
             <label class="block text-sm font-medium text-theme-text-subtle mb-2">Cor Primária</label>
             <div class="flex space-x-2">
@@ -697,7 +738,6 @@
                 </button>
             </div>
         </div>
-
         <div>
             <label class="block text-sm font-medium text-theme-text-subtle mb-2">Arredondamento (Abas/Botões)</label>
             <div class="flex items-center space-x-2">
@@ -705,7 +745,6 @@
                 <span id="dev-radius-ui-value" class="text-sm text-theme-text-muted w-10 text-right">8px</span>
             </div>
         </div>
-        
         <div>
             <label class="block text-sm font-medium text-theme-text-subtle mb-2">Arredondamento (Fotos)</label>
             <div class="flex items-center space-x-2">
@@ -714,10 +753,16 @@
             </div>
         </div>
         
-        <button id="dev-edit-logins" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover">
-            <i data-lucide="users" class="w-4 h-4"></i>
-            <span>Editar Logins</span>
-        </button>
+        <div class="space-y-2">
+            <button id="dev-edit-logins" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>Gerenciar Usuários</span>
+            </button>
+            <button id="dev-create-user" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-plus"></use></svg>
+                <span>Criar Novo Usuário</span>
+            </button>
+        </div>
     </div>
 
 
@@ -1285,7 +1330,7 @@ section-6, section-8,
                 `;
                 tableBody.innerHTML += row; 
             });
-            lucide.createIcons(); 
+            // lucide.createIcons(); // Não é mais necessário aqui
         }
         function deleteDocument(id) {
             if (confirm('Tem certeza que deseja excluir este informe?')) {
@@ -1398,7 +1443,7 @@ section-6, section-8,
                 `;
                 tableBody.innerHTML += row;
             });
-            // Não é mais necessário chamar lucide.createIcons() aqui
+            // Não é mais necessário chamar lucide.createIcons() aqui, pois os ícones são SVGs
         }
         
         function toggleUserStatus(cpf) {
@@ -1436,7 +1481,7 @@ section-6, section-8,
             }
         }
 
-        // Funções do Modal de Edição de Usuário
+        // --- Funções do Modal de Edição de Usuário ---
         function openUserEditModal(cpf) {
             const user = users.find(u => u.cpf === cpf);
             if (!user) return;
@@ -1477,8 +1522,67 @@ section-6, section-8,
             renderUsersTable();
             closeUserEditModal();
         }
+        
+        // --- NOVO: Funções do Modal de Criação de Usuário ---
+        function openCreateUserModal() {
+            document.getElementById('create-user-form').reset();
+            const modal = document.getElementById('create-user-modal');
+            modal.style.display = 'flex';
+            void modal.offsetHeight; 
+            modal.classList.add('modal-visible');
+            lucide.createIcons(); // Ícone X do modal
+        }
+        
+        function closeCreateUserModal() {
+            const modal = document.getElementById('create-user-modal');
+            modal.classList.remove('modal-visible');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
+        }
 
-        // Funções do Modal de Edição de PERFIL (próprio)
+        function saveNewUser(event) {
+            event.preventDefault();
+            
+            const cpf = document.getElementById('create-user-cpf').value.replace(/[\.-]/g, '');
+            const nome = document.getElementById('create-user-nome').value;
+            const sobrenome = document.getElementById('create-user-sobrenome').value;
+            const matricula = document.getElementById('create-user-matricula').value;
+            
+            if (!cpf || !nome || !sobrenome || !matricula) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+            
+            // Verifica se o CPF já existe
+            const userExists = users.find(u => u.cpf === cpf);
+            if (userExists) {
+                alert('Este CPF já está cadastrado.');
+                return;
+            }
+            
+            // Cria o novo objeto de usuário
+            const newUser = {
+                cpf: cpf,
+                matricula: matricula,
+                nome: nome,
+                sobrenome: sobrenome,
+                cpf_cnpj: cpf, // Padrão
+                idade: '',
+                crm: '',
+                telefone: '',
+                role: 'user', // Padrão
+                active: true, // Padrão
+                hasDevTools: false // Padrão
+            };
+            
+            users.push(newUser);
+            renderUsersTable();
+            closeCreateUserModal();
+            alert('Novo usuário criado com sucesso!');
+        }
+
+        // --- Funções do Modal de Edição de PERFIL (próprio) ---
         function renderUserAvatar() {
             const placeholder = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>";
             const avatarMain = document.getElementById('user-avatar');
@@ -1610,7 +1714,14 @@ section-6, section-8,
             document.getElementById('edit-user-cancel').addEventListener('click', closeUserEditModal);
             document.getElementById('edit-user-cancel-2').addEventListener('click', closeUserEditModal);
 
-            // Máscaras
+            // NOVO: Modal de Criação de Usuário (Admin)
+            document.getElementById('create-user-form').addEventListener('submit', saveNewUser);
+            document.getElementById('create-user-cancel').addEventListener('click', closeCreateUserModal);
+            document.getElementById('create-user-cancel-2').addEventListener('click', closeCreateUserModal);
+            document.getElementById('create-user-cpf').addEventListener('input', (e) => { e.target.value = maskCPF_CNPJ(e.target.value); });
+
+
+            // Máscaras (Modal Perfil)
             document.getElementById('edit-cpf_cnpj').addEventListener('input', (e) => { e.target.value = maskCPF_CNPJ(e.target.value); });
             document.getElementById('edit-telefone').addEventListener('input', (e) => { e.target.value = maskTelefone(e.target.value); });
             document.getElementById('edit-crm').addEventListener('input', (e) => { e.target.value = maskCRM(e.target.value); });
@@ -1651,6 +1762,12 @@ section-6, section-8,
                 showView('admin');
                 toggleDevTools(); 
                 document.getElementById('admin-user-table').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // NOVO: Listener do botão Criar Usuário
+            document.getElementById('dev-create-user').addEventListener('click', () => {
+                openCreateUserModal();
+                toggleDevTools(); // Fecha o menu dev
             });
             
              initTheme(); 
