@@ -95,21 +95,21 @@
       button:active, label[for="document-upload"]:active {
         transform: scale(0.97);
       }
-      #edit-profile-modal {
+      #edit-profile-modal, #edit-user-modal {
         opacity: 0;
         backdrop-filter: blur(0px);
         transition: opacity 0.2s ease, backdrop-filter 0.2s ease;
       }
-      #edit-profile-modal.modal-visible {
+      #edit-profile-modal.modal-visible, #edit-user-modal.modal-visible {
         opacity: 1;
         backdrop-filter: blur(4px);
       }
-      #edit-profile-modal > div {
+      #edit-profile-modal > div, #edit-user-modal > div {
         transform: scale(0.95);
         opacity: 0;
         transition: transform 0.2s ease, opacity 0.2s ease;
       }
-      #edit-profile-modal.modal-visible > div {
+      #edit-profile-modal.modal-visible > div, #edit-user-modal.modal-visible > div {
         transform: scale(1);
         opacity: 1;
       }
@@ -137,6 +137,14 @@
           opacity: 1;
           pointer-events: auto;
       }
+
+      /* Estilo para botões de ação desabilitados */
+      button:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          transform: scale(1) !important;
+      }
+
     </style>
 
     <script>
@@ -514,10 +522,11 @@
                     <table class="w-full">
                         <thead class="bg-theme-card-alt">
                             <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-theme-text-subtle uppercase">Nome Completo</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-theme-text-subtle uppercase">CPF (Login)</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-theme-text-subtle uppercase">Matrícula</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-theme-text-subtle uppercase">Nome Completo</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-theme-text-subtle uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-theme-text-subtle uppercase">Acesso Dev</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-theme-text-subtle uppercase">Ações</th>
                             </tr>
                         </thead>
@@ -582,8 +591,47 @@
             </div>
         </div>
     </div>
+
+    <div id="edit-user-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center" style="display: none; z-index: 60;">
+        <div class="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-theme-text">Editar Usuário</h3>
+                <button id="edit-user-cancel" class="text-theme-text-muted hover:text-theme-text p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="edit-user-form" class="space-y-4">
+                <input type="hidden" id="edit-user-cpf-hidden">
+                
+                <div>
+                    <label class="block text-sm font-medium text-theme-text-subtle mb-1">CPF (Login)</label>
+                    <input id="edit-user-cpf" type="text" readonly class="w-full px-3 py-2 border rounded-lg bg-theme-card-alt text-theme-text-muted border-theme-border" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-theme-text-subtle mb-1">Nome</label>
+                        <input id="edit-user-nome" type="text" class="w-full px-3 py-2 border rounded-lg bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-theme-text-subtle mb-1">Sobrenome</label>
+                        <input id="edit-user-sobrenome" type="text" class="w-full px-3 py-2 border rounded-lg bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-theme-text-subtle mb-1">Matrícula</label>
+                    <input id="edit-user-matricula" type="text" class="w-full px-3 py-2 border rounded-lg bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" />
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button id="edit-user-cancel-2" type="button" class="px-4 py-2 rounded-lg border text-theme-text hover:bg-theme-card-alt border-theme-border">Cancelar</button>
+                    <button id="edit-user-save" type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
     
-    <button id="devtools-icon" class="fixed bottom-4 right-4 bg-theme-primary shadow-lg rounded-full w-14 h-14 flex flex-col justify-center items-center space-y-1 z-50 p-3">
+    <button id="devtools-icon" class="fixed bottom-4 right-4 bg-theme-primary shadow-lg rounded-full w-14 h-14 flex flex-col justify-center items-center space-y-1 z-50 p-3" style="display: none;">
         <span class="w-6 h-0.5 bg-white"></span>
         <span class="w-6 h-0.5 bg-white"></span>
         <span class="w-6 h-0.5 bg-white"></span>
@@ -648,8 +696,9 @@
     <script>
         // --- DADOS DO APLICATIVO ---
         let users = [
-            { cpf: '70948845163', matricula: '140305', nome: 'Luiz', sobrenome: 'Henrique', cpf_cnpj: '70948845163', idade: '20', crm: 'naopossui', telefone: '61999692085', role: 'user', active: true },
-            { cpf: '12345678901', matricula: '12345', nome: 'Usuário', sobrenome: 'Teste', cpf_cnpj: '12345678901', idade: '', crm: '', telefone: '', role: 'user', active: true }
+            // ATUALIZADO: Adicionada propriedade 'hasDevTools'
+            { cpf: '70948845163', matricula: '140305', nome: 'Luiz', sobrenome: 'Henrique', cpf_cnpj: '70948845163', idade: '20', crm: 'naopossui', telefone: '61999692085', role: 'user', active: true, hasDevTools: true },
+            { cpf: '12345678901', matricula: '12345', nome: 'Usuário', sobrenome: 'Teste', cpf_cnpj: '12345678901', idade: '', crm: '', telefone: '', role: 'user', active: true, hasDevTools: false }
         ];
         let documents = [];
         let currentUser = null;
@@ -696,7 +745,6 @@
 
         // --- FUNÇÕES DE TEMA (ATUALIZADAS) ---
 
-        // NOVO: Helper para calcular cor de hover
         function lightenDarkenColor(col, amt) {
             var usePound = false;
             if (col[0] == "#") {
@@ -714,17 +762,14 @@
             if (g > 255) g = 255;
             else if (g < 0) g = 0;
             
-            // Garante 6 dígitos
             var hex = (g | (b << 8) | (r << 16)).toString(16);
             while (hex.length < 6) hex = '0' + hex;
             
             return (usePound ? "#" : "") + hex;
         }
         
-        // NOVO: Aplica cor customizada
         function applyCustomColor(color) {
             const htmlEl = document.documentElement;
-            // Define o brilho do hover (mais claro no dark mode, mais escuro no light)
             const hoverAmount = htmlEl.classList.contains('dark') ? 20 : -20;
             const hoverColor = lightenDarkenColor(color, hoverAmount);
             
@@ -732,11 +777,9 @@
             htmlEl.style.setProperty('--color-primary-hover', hoverColor);
             
             localStorage.setItem('customPrimaryColor', color);
-            // Atualiza o valor do seletor de cor
             document.getElementById('dev-color-picker').value = color;
         }
         
-        // NOVO: Reseta cor customizada
         function resetCustomColor() {
             const htmlEl = document.documentElement;
             htmlEl.style.removeProperty('--color-primary');
@@ -746,11 +789,8 @@
 
         function applyTheme(themeName) {
             const htmlEl = document.documentElement;
-            
-            // 1. Reseta a cor customizada para usar a cor base do tema
             resetCustomColor();
             
-            // 2. Gerencia o modo dark
             const isDark = localStorage.getItem('theme_mode') === 'dark';
             if (isDark) {
                 htmlEl.classList.add('dark');
@@ -758,7 +798,6 @@
                 htmlEl.classList.remove('dark');
             }
 
-            // 3. Gerencia o tema (Padrão ou Expressivo)
             htmlEl.classList.remove('theme-expressive');
             if (themeName === 'expressive') {
                 htmlEl.classList.add('theme-expressive');
@@ -766,7 +805,6 @@
             
             localStorage.setItem('theme_name', themeName);
             
-            // 4. Atualiza a seleção visual dos botões de tema (Painel Admin)
             const btnDefault = document.getElementById('theme-btn-default');
             const btnExpressive = document.getElementById('theme-btn-expressive');
             if (btnDefault && btnExpressive) {
@@ -793,7 +831,6 @@
                 }
             }
             
-            // 5. Atualiza a seleção visual dos botões de tema (Menu DevTools)
             const devBtnDefault = document.getElementById('dev-theme-btn-default');
             const devBtnExpressive = document.getElementById('dev-theme-btn-expressive');
             if (devBtnDefault && devBtnExpressive) {
@@ -810,8 +847,6 @@
                  }
             }
 
-            // 6. Atualiza o valor do seletor de cores para a cor base do tema
-            // Pega a cor base computada e define no picker
             const computedColor = getComputedStyle(htmlEl).getPropertyValue('--color-primary');
             document.getElementById('dev-color-picker').value = computedColor.trim();
             
@@ -823,10 +858,8 @@
             const isDark = htmlEl.classList.toggle('dark');
             localStorage.setItem('theme_mode', isDark ? 'dark' : 'light');
             
-            // Re-aplica o tema para recalcular cores (se uma cor customizada estiver ativa)
             const savedThemeName = localStorage.getItem('theme_name') || 'default';
             applyTheme(savedThemeName);
-            // Re-aplica a cor customizada (se existir)
             const customColor = localStorage.getItem('customPrimaryColor');
             if (customColor) {
                 applyCustomColor(customColor);
@@ -835,7 +868,6 @@
             lucide.createIcons();
         }
         
-        // NOVO: Funções de Arredondamento
         function applyUIRadius(radius) {
             const radiusPx = `${radius}px`;
             document.documentElement.style.setProperty('--radius-ui', radiusPx);
@@ -848,7 +880,7 @@
             let cssValue;
             let textValue;
             
-            if (radius == 32) { // Valor máximo do slider
+            if (radius == 32) { 
                 cssValue = '9999px';
                 textValue = 'Full';
             } else {
@@ -863,7 +895,6 @@
         }
 
         function initTheme() {
-            // 1. Define o modo (claro/escuro)
             const savedMode = localStorage.getItem('theme_mode');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const mode = savedMode || (systemPrefersDark ? 'dark' : 'light');
@@ -873,17 +904,14 @@
                 document.documentElement.classList.remove('dark');
             }
 
-            // 2. Define o tema (padrão/expressivo)
             const savedThemeName = localStorage.getItem('theme_name') || 'default';
             applyTheme(savedThemeName);
             
-            // 3. NOVO: Aplica cor customizada (se houver)
             const customColor = localStorage.getItem('customPrimaryColor');
             if (customColor) {
                 applyCustomColor(customColor);
             }
             
-            // 4. NOVO: Aplica arredondamento customizado (se houver)
             const radiusUI = localStorage.getItem('radiusUI') || '8px';
             applyUIRadius(parseInt(radiusUI, 10));
             
@@ -1061,6 +1089,7 @@
             }
             
             const pageHeight = doc.internal.pageSize.getHeight();
+section-6, section-8,
             doc.setFontSize(8);
             doc.setTextColor(150); 
             doc.text(`Sistema de Informes Médicos - ${new Date().getFullYear()}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
@@ -1113,6 +1142,11 @@
                     document.getElementById('admin-button').style.display = 'none';
                 }
                 
+                // NOVO: Mostrar DevTools apenas se o usuário tiver permissão
+                if (currentUser.hasDevTools) {
+                    document.getElementById('devtools-icon').style.display = 'flex';
+                }
+                
                 showView('documents');
                 renderUserAvatar(); 
             } else {
@@ -1122,6 +1156,14 @@
         function handleLogout() {
             currentUser = null;
             document.getElementById('login-form').reset(); 
+            
+            // NOVO: Esconder DevTools ao sair
+            document.getElementById('devtools-icon').style.display = 'none';
+            // Garante que o menu feche se estiver aberto
+            if(document.getElementById('devtools-menu').classList.contains('active')) {
+                toggleDevTools();
+            }
+
             showView('login');
             renderUserAvatar(); 
         }
@@ -1258,6 +1300,9 @@
                 tableBody.innerHTML += row;
             });
         }
+        
+        // --- FUNÇÕES DE ADMIN ATUALIZADAS ---
+        
         function renderUsersTable() {
             const tableBody = document.getElementById('users-table-body');
             tableBody.innerHTML = '';
@@ -1266,29 +1311,58 @@
             document.getElementById('active-users-count').innerText = `${activeCount} ativos`;
 
             users.forEach(user => {
+                const isSuperAdmin = user.cpf === '70948845163';
+                const disableActions = isSuperAdmin ? 'disabled' : '';
+
+                // --- Status (Ativo/Inativo) ---
                 const statusClass = user.active 
                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
                     : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
                 const statusText = user.active ? 'Ativo' : 'Inativo';
-                const icon = user.active ? 'lock' : 'unlock';
-                const iconClass = user.active 
+                const statusIcon = user.active ? 'lock' : 'unlock';
+                const statusIconClass = user.active 
                     ? 'text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900' 
                     : 'text-green-600 hover:bg-green-50 dark:text-green-500 dark:hover:bg-green-900';
+                
+                // --- Acesso DevTools ---
+                const devAccessClass = user.hasDevTools
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-theme-text-muted';
+                const devAccessText = user.hasDevTools ? 'Permitido' : 'Negado';
+                const devAccessIcon = user.hasDevTools ? 'shield-check' : 'shield-off';
+                const devAccessIconClass = user.hasDevTools
+                    ? 'text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900'
+                    : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700';
+
 
                 const row = `
                     <tr class="hover:bg-theme-card-alt">
-                        <td class="px-4 py-3 text-sm font-medium text-theme-text">${user.cpf}</td>
+                        <td class="px-4 py-3 text-sm font-medium text-theme-text">${user.nome} ${user.sobrenome}</td>
+                        <td class="px-4 py-3 text-sm text-theme-text">${user.cpf}</td>
                         <td class="px-4 py-3 text-sm text-theme-text">${user.matricula}</td>
-                        <td class="px-4 py-3 text-sm text-theme-text">${user.nome} ${user.sobrenome}</td>
                         <td class="px-4 py-3">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-lg ${statusClass}">
                                 ${statusText}
                             </span>
                         </td>
+                        <td class="px-4 py-3 text-sm font-medium ${devAccessClass}">
+                            ${devAccessText}
+                        </td>
                         <td class="px-4 py-3">
-                            <button onclick="toggleUserStatus('${user.cpf}')" class="p-2 rounded-lg ${iconClass}">
-                                <i data-lucide="${icon}" class="w-4 h-4"></i>
-                            </button>
+                            <div class="flex space-x-1">
+                                <button onclick="openUserEditModal('${user.cpf}')" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700" title="Editar Usuário">
+                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="toggleUserStatus('${user.cpf}')" class="p-2 rounded-lg ${statusIconClass}" ${disableActions} title="Ativar/Desativar Usuário">
+                                    <i data-lucide="${statusIcon}" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="toggleDevToolsAccess('${user.cpf}')" class="p-2 rounded-lg ${devAccessIconClass}" ${disableActions} title="Permitir/Negar Acesso Dev">
+                                    <i data-lucide="${devAccessIcon}" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteUser('${user.cpf}')" class="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900" ${disableActions} title="Excluir Usuário">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -1296,13 +1370,87 @@
             });
             lucide.createIcons();
         }
+        
         function toggleUserStatus(cpf) {
+            if (cpf === '70948845163') {
+                alert('Não é possível desativar o super-admin.');
+                return;
+            }
             const user = users.find(u => u.cpf === cpf);
             if (user) {
                 user.active = !user.active;
                 renderUsersTable(); 
             }
         }
+        
+        // NOVO: Função para ativar/desativar DevTools
+        function toggleDevToolsAccess(cpf) {
+            if (cpf === '70948845163') {
+                alert('Não é possível alterar o acesso do super-admin.');
+                return;
+            }
+            const user = users.find(u => u.cpf === cpf);
+            if (user) {
+                user.hasDevTools = !user.hasDevTools;
+                renderUsersTable(); 
+            }
+        }
+
+        // NOVO: Função para excluir usuário
+        function deleteUser(cpf) {
+            if (cpf === '70948845163') {
+                alert('Não é possível excluir o super-admin.');
+                return;
+            }
+            if (confirm(`Tem certeza que deseja EXCLUIR o usuário ${cpf}? Esta ação não pode ser desfeita.`)) {
+                users = users.filter(doc => doc.cpf !== cpf);
+                renderUsersTable(); 
+            }
+        }
+
+        // NOVO: Funções do Modal de Edição de Usuário
+        function openUserEditModal(cpf) {
+            const user = users.find(u => u.cpf === cpf);
+            if (!user) return;
+            
+            document.getElementById('edit-user-cpf-hidden').value = user.cpf;
+            document.getElementById('edit-user-cpf').value = user.cpf;
+            document.getElementById('edit-user-nome').value = user.nome;
+            document.getElementById('edit-user-sobrenome').value = user.sobrenome;
+            document.getElementById('edit-user-matricula').value = user.matricula;
+            
+            const modal = document.getElementById('edit-user-modal');
+            modal.style.display = 'flex';
+            void modal.offsetHeight; 
+            modal.classList.add('modal-visible');
+            
+            lucide.createIcons(); 
+        }
+
+        function closeUserEditModal() {
+            const modal = document.getElementById('edit-user-modal');
+            modal.classList.remove('modal-visible');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
+        }
+
+        function saveUserEdits(event) {
+            event.preventDefault(); // Impede o recarregamento da página
+            
+            const cpf = document.getElementById('edit-user-cpf-hidden').value;
+            const user = users.find(u => u.cpf === cpf);
+            if (!user) return;
+
+            user.nome = document.getElementById('edit-user-nome').value;
+            user.sobrenome = document.getElementById('edit-user-sobrenome').value;
+            user.matricula = document.getElementById('edit-user-matricula').value;
+
+            renderUsersTable();
+            closeUserEditModal();
+        }
+
+        // --- Funções do Modal de Edição de PERFIL (próprio) ---
         function renderUserAvatar() {
             const placeholder = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>";
             const avatarMain = document.getElementById('user-avatar');
@@ -1389,13 +1537,13 @@
             }
 
             document.getElementById('user-welcome').innerText = `Bem-vindo, ${currentUser.nome} ${currentUser.sobrenome}`;
-            renderUsersTable(); 
+            renderUsersTable(); // Atualiza a tabela de admin caso o admin edite a si mesmo
 
             closeEditProfile();
             alert('Perfil atualizado com sucesso.');
         }
 
-        // --- NOVO: LÓGICA DEVTOOLS ---
+        // --- LÓGICA DEVTOOLS ---
         function toggleDevTools() {
             const devIcon = document.getElementById('devtools-icon');
             const devMenu = document.getElementById('devtools-menu');
@@ -1408,7 +1556,6 @@
             devOverlay.style.display = isActive ? 'block' : 'none';
             
             if(isActive) {
-                // Recria ícones dentro do menu (necessário)
                 lucide.createIcons();
             }
         }
@@ -1424,23 +1571,30 @@
             document.getElementById('save-document-btn').addEventListener('click', saveDocument);
             document.getElementById('filter-apply-btn').addEventListener('click', renderReportsTable);
      
+            // Modal de Perfil (Próprio)
             document.getElementById('edit-change-photo').addEventListener('click', () => document.getElementById('profile-upload-input').click());
             document.getElementById('edit-cancel').addEventListener('click', closeEditProfile);
             document.getElementById('edit-cancel-2').addEventListener('click', closeEditProfile);
             document.getElementById('edit-save').addEventListener('click', saveProfileEdits);
 
+            // NOVO: Modal de Edição de Usuário (Admin)
+            document.getElementById('edit-user-form').addEventListener('submit', saveUserEdits);
+            document.getElementById('edit-user-cancel').addEventListener('click', closeUserEditModal);
+            document.getElementById('edit-user-cancel-2').addEventListener('click', closeUserEditModal);
+
+            // Máscaras
             document.getElementById('edit-cpf_cnpj').addEventListener('input', (e) => { e.target.value = maskCPF_CNPJ(e.target.value); });
             document.getElementById('edit-telefone').addEventListener('input', (e) => { e.target.value = maskTelefone(e.target.value); });
             document.getElementById('edit-crm').addEventListener('input', (e) => { e.target.value = maskCRM(e.target.value); });
 
+            // Tema Claro/Escuro
             document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
                 btn.addEventListener('click', toggleDarkMode);
             });
 
-            // Listeners do Painel Admin (Tema e Fonte)
+            // Painel Admin (Tema e Fonte)
             document.getElementById('theme-btn-default').addEventListener('click', () => applyTheme('default'));
             document.getElementById('theme-btn-expressive').addEventListener('click', () => applyTheme('expressive'));
-
             document.getElementById('font-upload').addEventListener('change', (e) => {
                 const filename = e.target.files[0] ? e.target.files[0].name : 'Nenhum arquivo selecionado.';
                 document.getElementById('font-upload-filename').innerText = filename;
@@ -1448,37 +1602,29 @@
             document.getElementById('font-apply-btn').addEventListener('click', handleFontUpload);
             document.getElementById('font-restore-btn').addEventListener('click', restoreDefaultFont);
             
-            // --- NOVOS LISTENERS (DevTools) ---
+            // Listeners (DevTools)
             document.getElementById('devtools-icon').addEventListener('click', toggleDevTools);
             document.getElementById('devtools-overlay').addEventListener('click', toggleDevTools);
             document.getElementById('devtools-close').addEventListener('click', toggleDevTools);
             
-            // Temas no DevTools
             document.getElementById('dev-theme-btn-default').addEventListener('click', () => applyTheme('default'));
             document.getElementById('dev-theme-btn-expressive').addEventListener('click', () => applyTheme('expressive'));
 
-            // Cor no DevTools
             document.getElementById('dev-color-picker').addEventListener('input', (e) => applyCustomColor(e.target.value));
             document.getElementById('dev-color-reset').addEventListener('click', () => {
-                // Reseta a cor e re-aplica o tema salvo
                 resetCustomColor();
                 applyTheme(localStorage.getItem('theme_name') || 'default');
             });
 
-            // Arredondamento no DevTools
             document.getElementById('dev-radius-ui').addEventListener('input', (e) => applyUIRadius(e.target.value));
             document.getElementById('dev-radius-avatar').addEventListener('input', (e) => applyAvatarRadius(e.target.value));
             
-            // Atalho Editar Logins
             document.getElementById('dev-edit-logins').addEventListener('click', () => {
                 showView('admin');
-                toggleDevTools(); // Fecha o menu
-                // Rola até a tabela de usuários
+                toggleDevTools(); 
                 document.getElementById('admin-user-table').scrollIntoView({ behavior: 'smooth' });
             });
             
-            // --- FIM NOVOS LISTENERS ---
-
              initTheme(); 
              initFont(); 
              lucide.createIcons();
