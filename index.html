@@ -184,6 +184,33 @@
             <path d="M21 12H9"></path>
             <path d="M7 21H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"></path>
         </symbol>
+        
+        <symbol id="icon-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+            <path d="M15 5l4 4"></path>
+        </symbol>
+        
+        <symbol id="icon-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <path d="m9 12 2 2 4-4"></path>
+        </symbol>
+        
+        <symbol id="icon-shield-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-8 3v7c0 6 8 10 8 10a6.9 6.9 0 0 0 2-19"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+        </symbol>
+        
+        <symbol id="icon-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+            <line x1="12" y1="2" x2="12" y2="12"></line>
+        </symbol>
+        
+        <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+        </symbol>
     </svg>
     
     <div id="view-login" class="view-container min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gemini-gray-800 dark:to-gemini-gray-900 flex items-center justify-center p-4">
@@ -411,6 +438,7 @@
                 <div id="report-list-empty" class="text-center py-8">
                     <i data-lucide="search" class="w-12 h-12 text-theme-text-muted mx-auto mb-4"></i>
                     <p class="text-theme-text-muted">Nenhum informe encontrado com os filtros aplicados</p>
+
                 </div>
                 <div id="report-list-table" class="overflow-x-auto" style="display: none;">
                     <table class="w-full">
@@ -1250,7 +1278,7 @@ section-6, section-8,
                         <td class="px-4 py-3 text-sm text-theme-text">${doc.createdAt}</td>
                         <td class="px-4 py-3 text-sm">
                             <button onclick="deleteDocument(${doc.id})" class="text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-trash"></use></svg>
                             </button>
                         </td>
                     </tr>
@@ -1303,6 +1331,7 @@ section-6, section-8,
         
         // --- FUNÇÕES DE ADMIN ATUALIZADAS ---
         
+        // ATUALIZADO: renderUsersTable agora usa ícones SVG
         function renderUsersTable() {
             const tableBody = document.getElementById('users-table-body');
             tableBody.innerHTML = '';
@@ -1319,7 +1348,7 @@ section-6, section-8,
                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
                     : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
                 const statusText = user.active ? 'Ativo' : 'Inativo';
-                const statusIcon = user.active ? 'lock' : 'unlock';
+                // Ícone de Power. A cor (verde/vermelho) indicará o estado.
                 const statusIconClass = user.active 
                     ? 'text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900' 
                     : 'text-green-600 hover:bg-green-50 dark:text-green-500 dark:hover:bg-green-900';
@@ -1329,7 +1358,8 @@ section-6, section-8,
                     ? 'text-blue-600 dark:text-blue-400'
                     : 'text-theme-text-muted';
                 const devAccessText = user.hasDevTools ? 'Permitido' : 'Negado';
-                const devAccessIcon = user.hasDevTools ? 'shield-check' : 'shield-off';
+                // Define o ícone de escudo correto (check ou off)
+                const devAccessIcon = user.hasDevTools ? 'icon-shield-check' : 'icon-shield-off';
                 const devAccessIconClass = user.hasDevTools
                     ? 'text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900'
                     : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700';
@@ -1351,16 +1381,16 @@ section-6, section-8,
                         <td class="px-4 py-3">
                             <div class="flex space-x-1">
                                 <button onclick="openUserEditModal('${user.cpf}')" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700" title="Editar Usuário">
-                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                    <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-pencil"></use></svg>
                                 </button>
                                 <button onclick="toggleUserStatus('${user.cpf}')" class="p-2 rounded-lg ${statusIconClass}" ${disableActions} title="Ativar/Desativar Usuário">
-                                    <i data-lucide="${statusIcon}" class="w-4 h-4"></i>
+                                    <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-power"></use></svg>
                                 </button>
                                 <button onclick="toggleDevToolsAccess('${user.cpf}')" class="p-2 rounded-lg ${devAccessIconClass}" ${disableActions} title="Permitir/Negar Acesso Dev">
-                                    <i data-lucide="${devAccessIcon}" class="w-4 h-4"></i>
+                                    <svg class="w-4 h-4" aria-hidden="true"><use href="#${devAccessIcon}"></use></svg>
                                 </button>
                                 <button onclick="deleteUser('${user.cpf}')" class="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900" ${disableActions} title="Excluir Usuário">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-trash"></use></svg>
                                 </button>
                             </div>
                         </td>
@@ -1368,7 +1398,7 @@ section-6, section-8,
                 `;
                 tableBody.innerHTML += row;
             });
-            lucide.createIcons();
+            // Não é mais necessário chamar lucide.createIcons() aqui
         }
         
         function toggleUserStatus(cpf) {
@@ -1383,7 +1413,6 @@ section-6, section-8,
             }
         }
         
-        // NOVO: Função para ativar/desativar DevTools
         function toggleDevToolsAccess(cpf) {
             if (cpf === '70948845163') {
                 alert('Não é possível alterar o acesso do super-admin.');
@@ -1396,7 +1425,6 @@ section-6, section-8,
             }
         }
 
-        // NOVO: Função para excluir usuário
         function deleteUser(cpf) {
             if (cpf === '70948845163') {
                 alert('Não é possível excluir o super-admin.');
@@ -1408,7 +1436,7 @@ section-6, section-8,
             }
         }
 
-        // NOVO: Funções do Modal de Edição de Usuário
+        // Funções do Modal de Edição de Usuário
         function openUserEditModal(cpf) {
             const user = users.find(u => u.cpf === cpf);
             if (!user) return;
@@ -1424,7 +1452,7 @@ section-6, section-8,
             void modal.offsetHeight; 
             modal.classList.add('modal-visible');
             
-            lucide.createIcons(); 
+            lucide.createIcons(); // Ícone X do modal ainda usa Lucide
         }
 
         function closeUserEditModal() {
@@ -1436,7 +1464,7 @@ section-6, section-8,
         }
 
         function saveUserEdits(event) {
-            event.preventDefault(); // Impede o recarregamento da página
+            event.preventDefault(); 
             
             const cpf = document.getElementById('edit-user-cpf-hidden').value;
             const user = users.find(u => u.cpf === cpf);
@@ -1450,7 +1478,7 @@ section-6, section-8,
             closeUserEditModal();
         }
 
-        // --- Funções do Modal de Edição de PERFIL (próprio) ---
+        // Funções do Modal de Edição de PERFIL (próprio)
         function renderUserAvatar() {
             const placeholder = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>";
             const avatarMain = document.getElementById('user-avatar');
@@ -1537,7 +1565,7 @@ section-6, section-8,
             }
 
             document.getElementById('user-welcome').innerText = `Bem-vindo, ${currentUser.nome} ${currentUser.sobrenome}`;
-            renderUsersTable(); // Atualiza a tabela de admin caso o admin edite a si mesmo
+            renderUsersTable(); 
 
             closeEditProfile();
             alert('Perfil atualizado com sucesso.');
@@ -1577,7 +1605,7 @@ section-6, section-8,
             document.getElementById('edit-cancel-2').addEventListener('click', closeEditProfile);
             document.getElementById('edit-save').addEventListener('click', saveProfileEdits);
 
-            // NOVO: Modal de Edição de Usuário (Admin)
+            // Modal de Edição de Usuário (Admin)
             document.getElementById('edit-user-form').addEventListener('submit', saveUserEdits);
             document.getElementById('edit-user-cancel').addEventListener('click', closeUserEditModal);
             document.getElementById('edit-user-cancel-2').addEventListener('click', closeUserEditModal);
@@ -1627,7 +1655,7 @@ section-6, section-8,
             
              initTheme(); 
              initFont(); 
-             lucide.createIcons();
+             lucide.createIcons(); // Carrega os ícones restantes (como o 'x' dos modais)
              renderUserAvatar();
 
              const loginView = document.getElementById('view-login');
