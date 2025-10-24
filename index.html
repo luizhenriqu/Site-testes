@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Informes Médicos</title>
     
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <script src="https://unpkg.com/lucide@latest/dist/lucide.js"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
     
     <style id="custom-font-style"></style>
-
+    
     <style>
       :root {
         /* Tema Padrão (Gemini) - Claro */
@@ -144,6 +146,52 @@
           cursor: not-allowed;
           transform: scale(1) !important;
       }
+      
+      /* Estilos para o novo editor de tema */
+      .theme-editor-grid {
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          gap: 0.75rem;
+          align-items: center;
+      }
+      .theme-editor-grid label {
+          font-size: 0.875rem;
+          color: var(--color-text-subtle);
+      }
+      .theme-editor-grid input[type="color"] {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          width: 100%;
+          height: 2.5rem; /* 40px */
+          background-color: transparent;
+          border: 1px solid var(--color-border);
+          border-radius: 0.5rem;
+          cursor: pointer;
+      }
+      .theme-editor-grid input[type="color"]::-webkit-color-swatch-wrapper {
+          padding: 0;
+          border-radius: 0.5rem;
+      }
+      .theme-editor-grid input[type="color"]::-webkit-color-swatch {
+          border: none;
+          border-radius: 0.5rem;
+      }
+      .theme-editor-grid input[type="color"]::-moz-color-swatch {
+          border: none;
+          border-radius: 0.5rem;
+      }
+      .theme-editor-grid .color-hex-value {
+          font-family: monospace;
+          font-size: 0.875rem;
+          color: var(--color-text-muted);
+          padding: 0.5rem;
+          border: 1px solid var(--color-border);
+          border-radius: 0.375rem;
+          background-color: var(--color-card-alt);
+          width: 5rem;
+          text-align: center;
+      }
 
     </style>
 
@@ -216,6 +264,15 @@
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
         </symbol>
+        
+        <symbol id="icon-theme-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <title>Editor de Tema</title>
+            <circle cx="13.5" cy="6.5" r="2.5"></circle>
+            <circle cx="17.5" cy="10.5" r="2.5"></circle>
+            <circle cx="10.5" cy="10.5" r="2.5"></circle>
+            <circle cx="6.5" cy="6.5" r="2.5"></circle>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.83-.13 2.69-.37L12 12V2z"></path>
+        </symbol>
     </svg>
     
     <div id="view-login" class="view-container min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gemini-gray-800 dark:to-gemini-gray-900 flex items-center justify-center p-4">
@@ -235,8 +292,8 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-theme-text-subtle mb-2">Matrícula</label>
-                    <input id="login-matricula" type="password" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-transparent bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" placeholder="Digite sua matrícula" />
-                </div>
+                    <input id="login-matricula" type="text" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-transparent bg-theme-input text-theme-text placeholder-theme-text-muted border-theme-border" placeholder="Digite sua matrícula" />
+                    </div>
                 <button type="submit" class="w-full bg-theme-primary text-white py-3 rounded-lg font-semibold hover:bg-theme-primary-hover transition-colors duration-200">
                     Entrar
                 </button>
@@ -506,39 +563,42 @@
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-theme-card rounded-xl shadow-sm p-6">
-                    <h2 class="text-lg font-semibold text-theme-text mb-4">Gerenciamento de Tema</h2>
-                    <p class="text-sm text-theme-text-muted mb-6">Selecione o tema visual do sistema. O modo Claro/Escuro funciona em ambos.</p>
-                    <div class="flex space-x-4">
-                        <button id="theme-btn-default" class="flex-1 text-center p-4 border-2 rounded-lg transition-colors border-theme-primary">
-                            <i data-lucide="gem" class="w-6 h-6 mx-auto mb-2 text-theme-primary"></i>
-                            <span class="font-medium text-theme-text">Padrão (Gemini)</span>
-                        </button>
-                        <button id="theme-btn-expressive" class="flex-1 text-center p-4 border-2 rounded-lg transition-colors border-theme-border hover:border-theme-primary">
-                            <i data-lucide="palette" class="w-6 h-6 mx-auto mb-2 text-theme-text-muted"></i>
-                            <span class="font-medium text-theme-text">Expressivo (Android)</span>
-                        </button>
-                    </div>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-theme-card rounded-xl shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-semibold text-theme-text mb-4">Gerenciamento de Tema</h2>
+                
+                <button onclick="showView('theme-editor')" class="flex items-center justify-center w-full space-x-2 px-4 py-3 mb-6 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover">
+                    <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-theme-palette"></use></svg>
+                    <span>Abrir Editor de Tema Avançado</span>
+                </button>
+                
+                <p class="text-sm text-theme-text-muted mb-6 text-center">Ou selecione um tema visual pré-definido:</p>
+                <div class="flex space-x-4">
+                    <button id="theme-btn-default" class="flex-1 text-center p-4 border-2 rounded-lg transition-colors border-theme-primary">
+                        <i data-lucide="gem" class="w-6 h-6 mx-auto mb-2 text-theme-primary"></i>
+                        <span class="font-medium text-theme-text">Padrão (Gemini)</span>
+                    </button>
+                    <button id="theme-btn-expressive" class="flex-1 text-center p-4 border-2 rounded-lg transition-colors border-theme-border hover:border-theme-primary">
+                        <i data-lucide="palette" class="w-6 h-6 mx-auto mb-2 text-theme-text-muted"></i>
+                        <span class="font-medium text-theme-text">Expressivo (Android)</span>
+                    </button>
                 </div>
+            </div>
 
-                <div class="bg-theme-card rounded-xl shadow-sm p-6">
-                    <h2 class="text-lg font-semibold text-theme-text mb-4">Fonte Personalizada</h2>
-                    <p class="text-sm text-theme-text-muted mb-6">Carregue um arquivo de fonte local (.ttf, .otf, .woff) para ser usado no sistema.</p>
-                    <input type="file" id="font-upload" class="hidden" accept=".ttf,.otf,.woff,.woff2" />
-                    <div class="flex space-x-4">
-                        <label for="font-upload" class="flex-1 text-center px-4 py-2 bg-theme-primary text-white rounded-lg cursor-pointer hover:bg-theme-primary-hover flex items-center justify-center space-x-2">
-                            <i data-lucide="file-up" class="w-4 h-4"></i>
-                            <span>Selecionar Arquivo</span>
-                        </label>
-                        <button id="font-apply-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Aplicar</button>
-                    </div>
-                    <div class="mt-4">
-                        <span id="font-upload-filename" class="text-sm text-theme-text-muted">Nenhum arquivo selecionado.</span>
-                        <button id="font-restore-btn" class="ml-2 text-sm text-red-600 hover:underline">(Restaurar Padrão)</button>
-                    </div>
+            <div class="bg-theme-card rounded-xl shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-semibold text-theme-text mb-4">Fonte Personalizada</h2>
+                <p class="text-sm text-theme-text-muted mb-6">Carregue um arquivo de fonte local (.ttf, .otf, .woff) para ser usado no sistema.</p>
+                <input type="file" id="font-upload" class="hidden" accept=".ttf,.otf,.woff,.woff2" />
+                <div class="flex space-x-4">
+                    <label for="font-upload" class="flex-1 text-center px-4 py-2 bg-theme-primary text-white rounded-lg cursor-pointer hover:bg-theme-primary-hover flex items-center justify-center space-x-2">
+                        <i data-lucide="file-up" class="w-4 h-4"></i>
+                        <span>Selecionar Arquivo</span>
+                    </label>
+                    <button id="font-apply-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Aplicar</button>
+                </div>
+                <div class="mt-4">
+                    <span id="font-upload-filename" class="text-sm text-theme-text-muted">Nenhum arquivo selecionado.</span>
+                    <button id="font-restore-btn" class="ml-2 text-sm text-red-600 hover:underline">(Restaurar Padrão)</button>
                 </div>
             </div>
 
@@ -567,6 +627,48 @@
                             </tbody>
                     </table>
                 </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="view-theme-editor" class="view-container min-h-screen bg-theme-bg" style="display: none;">
+        <header class="bg-theme-card shadow-sm border-b border-theme-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-8 h-8 text-theme-primary" aria-hidden="true"><use href="#icon-theme-palette"></use></svg>
+                        <h1 class="text-xl font-semibold text-theme-text">Editor de Tema Avançado</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="showView('admin')" class="text-theme-primary hover:text-theme-primary-hover font-medium">Voltar</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <div class="bg-theme-card rounded-xl shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-theme-text mb-6">Tema Claro</h2>
+                    <div id="theme-editor-light" class="theme-editor-grid space-y-3">
+                        </div>
+                </div>
+
+                <div class="bg-theme-card rounded-xl shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-theme-text mb-6">Tema Escuro</h2>
+                    <div id="theme-editor-dark" class="theme-editor-grid space-y-3">
+                        </div>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-theme-card rounded-xl shadow-sm p-6 flex flex-col sm:flex-row justify-end gap-4">
+                 <button id="theme-editor-restore" class="px-6 py-2 rounded-lg border text-red-600 hover:bg-red-50 dark:hover:bg-red-900/50 border-red-500/50">
+                    Restaurar Padrões
+                </button>
+                <button id="theme-editor-save" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    Salvar Tema Customizado
+                </button>
             </div>
         </main>
     </div>
@@ -729,15 +831,7 @@
                 </button>
             </div>
         </div>
-        <div>
-            <label class="block text-sm font-medium text-theme-text-subtle mb-2">Cor Primária</label>
-            <div class="flex space-x-2">
-                <input type="color" id="dev-color-picker" class="w-10 h-10 p-0 border-none rounded-lg cursor-pointer"/>
-                <button id="dev-color-reset" class="flex-1 text-center p-2 border rounded-lg transition-colors text-theme-text border-theme-border hover:bg-theme-card-alt text-sm">
-                    Restaurar
-                </button>
-            </div>
-        </div>
+        
         <div>
             <label class="block text-sm font-medium text-theme-text-subtle mb-2">Arredondamento (Abas/Botões)</label>
             <div class="flex items-center space-x-2">
@@ -770,7 +864,7 @@
         // --- DADOS DO APLICATIVO ---
         let users = [
             // ATUALIZADO: Adicionada propriedade 'hasDevTools'
-            { cpf: '70948845163', matricula: '140305', nome: 'Luiz', sobrenome: 'Henrique', cpf_cnpj: '70948845163', idade: '20', crm: 'naopossui', telefone: '61999692085', role: 'user', active: true, hasDevTools: true },
+            { cpf: '70948845163', matricula: '140305', nome: 'Luiz', sobrenome: 'Henrique', cpf_cnpj: '70948845163', idade: '20', crm: 'naopossui', telefone: '61999692085', role: 'admin', active: true, hasDevTools: true },
             { cpf: '12345678901', matricula: '12345', nome: 'Usuário', sobrenome: 'Teste', cpf_cnpj: '12345678901', idade: '', crm: '', telefone: '', role: 'user', active: true, hasDevTools: false }
         ];
         let documents = [];
@@ -817,52 +911,42 @@
         }
 
         // --- FUNÇÕES DE TEMA (ATUALIZADAS) ---
-
-        function lightenDarkenColor(col, amt) {
-            var usePound = false;
-            if (col[0] == "#") {
-                col = col.slice(1);
-                usePound = true;
+        
+        // Objeto de configuração para o novo editor de tema
+        const themeEditorConfig = {
+            variables: [
+                '--color-primary',
+                '--color-primary-hover',
+                '--color-bg',
+                '--color-card',
+                '--color-card-alt',
+                '--color-text',
+                '--color-text-muted',
+                '--color-text-subtle',
+                '--color-border',
+                '--color-input'
+            ],
+            labels: {
+                '--color-primary': 'Cor Primária',
+                '--color-primary-hover': 'Primária (Hover)',
+                '--color-bg': 'Fundo da Página',
+                '--color-card': 'Fundo do Card',
+                '--color-card-alt': 'Fundo (Alternativo)',
+                '--color-text': 'Texto Principal',
+                '--color-text-muted': 'Texto (Secundário)',
+                '--color-text-subtle': 'Texto (Sutil)',
+                '--color-border': 'Bordas',
+                '--color-input': 'Fundo do Input'
             }
-            var num = parseInt(col, 16);
-            var r = (num >> 16) + amt;
-            if (r > 255) r = 255;
-            else if (r < 0) r = 0;
-            var b = ((num >> 8) & 0x00FF) + amt;
-            if (b > 255) b = 255;
-            else if (b < 0) b = 0;
-            var g = (num & 0x0000FF) + amt;
-            if (g > 255) g = 255;
-            else if (g < 0) g = 0;
-            
-            var hex = (g | (b << 8) | (r << 16)).toString(16);
-            while (hex.length < 6) hex = '0' + hex;
-            
-            return (usePound ? "#" : "") + hex;
-        }
-        
-        function applyCustomColor(color) {
-            const htmlEl = document.documentElement;
-            const hoverAmount = htmlEl.classList.contains('dark') ? 20 : -20;
-            const hoverColor = lightenDarkenColor(color, hoverAmount);
-            
-            htmlEl.style.setProperty('--color-primary', color);
-            htmlEl.style.setProperty('--color-primary-hover', hoverColor);
-            
-            localStorage.setItem('customPrimaryColor', color);
-            document.getElementById('dev-color-picker').value = color;
-        }
-        
-        function resetCustomColor() {
-            const htmlEl = document.documentElement;
-            htmlEl.style.removeProperty('--color-primary');
-            htmlEl.style.removeProperty('--color-primary-hover');
-            localStorage.removeItem('customPrimaryColor');
+        };
+
+        function removeCustomThemeStyles() {
+            document.getElementById('custom-theme-styles')?.remove();
         }
 
         function applyTheme(themeName) {
             const htmlEl = document.documentElement;
-            resetCustomColor();
+            removeCustomThemeStyles(); 
             
             const isDark = localStorage.getItem('theme_mode') === 'dark';
             if (isDark) {
@@ -871,13 +955,49 @@
                 htmlEl.classList.remove('dark');
             }
 
+            // Aplica tema base (Default ou Expressive)
             htmlEl.classList.remove('theme-expressive');
             if (themeName === 'expressive') {
                 htmlEl.classList.add('theme-expressive');
             }
             
+            // NOVO: Aplica tema customizado por cima, se for 'custom'
+            if (themeName === 'custom') {
+                const styleTag = document.createElement('style');
+                styleTag.id = 'custom-theme-styles';
+                let lightStyles = ':root {\n';
+                let darkStyles = 'html.dark {\n';
+                let hasCustom = false;
+
+                themeEditorConfig.variables.forEach(varName => {
+                    const lightVal = localStorage.getItem(`custom-theme-light-${varName}`);
+                    const darkVal = localStorage.getItem(`custom-theme-dark-${varName}`);
+                    if (lightVal) {
+                        lightStyles += `  ${varName}: ${lightVal} !important;\n`;
+                        hasCustom = true;
+                    }
+                    if (darkVal) {
+                        darkStyles += `  ${varName}: ${darkVal} !important;\n`;
+                        hasCustom = true;
+                    }
+                });
+                
+                lightStyles += '}';
+                darkStyles += '}';
+                
+                if (hasCustom) {
+                    styleTag.innerHTML = `${lightStyles}\n${darkStyles}`;
+                    document.head.appendChild(styleTag);
+                } else {
+                    // Se não há customização salva, reverte para o padrão
+                    localStorage.setItem('theme_name', 'default');
+                    // A classe 'theme-expressive' já foi removida, então vai carregar o default
+                }
+            }
+
             localStorage.setItem('theme_name', themeName);
             
+            // Atualiza botões de preset (Padrão/Expressivo)
             const btnDefault = document.getElementById('theme-btn-default');
             const btnExpressive = document.getElementById('theme-btn-expressive');
             if (btnDefault && btnExpressive) {
@@ -891,7 +1011,7 @@
                     btnExpressive.classList.remove('border-theme-border', 'hover:border-theme-primary');
                     btnExpressive.querySelector('i').classList.remove('text-theme-text-muted');
                     btnExpressive.querySelector('i').classList.add('text-theme-primary');
-                } else {
+                } else { // default ou custom
                     btnDefault.classList.add('border-theme-primary');
                     btnDefault.classList.remove('border-theme-border', 'hover:border-theme-primary');
                     btnDefault.querySelector('i').classList.remove('text-theme-text-muted');
@@ -904,6 +1024,7 @@
                 }
             }
             
+            // Atualiza botões do DevTools
             const devBtnDefault = document.getElementById('dev-theme-btn-default');
             const devBtnExpressive = document.getElementById('dev-theme-btn-expressive');
             if (devBtnDefault && devBtnExpressive) {
@@ -912,16 +1033,13 @@
                     devBtnDefault.classList.add('border-theme-border');
                     devBtnExpressive.classList.add('border-theme-primary');
                     devBtnExpressive.classList.remove('border-theme-border');
-                 } else {
+                 } else { // default ou custom
                     devBtnDefault.classList.add('border-theme-primary');
                     devBtnDefault.classList.remove('border-theme-border');
                     devBtnExpressive.classList.remove('border-theme-primary');
                     devBtnExpressive.classList.add('border-theme-border');
                  }
             }
-
-            const computedColor = getComputedStyle(htmlEl).getPropertyValue('--color-primary');
-            document.getElementById('dev-color-picker').value = computedColor.trim();
             
             lucide.createIcons();
         }
@@ -932,12 +1050,7 @@
             localStorage.setItem('theme_mode', isDark ? 'dark' : 'light');
             
             const savedThemeName = localStorage.getItem('theme_name') || 'default';
-            applyTheme(savedThemeName);
-            const customColor = localStorage.getItem('customPrimaryColor');
-            if (customColor) {
-                applyCustomColor(customColor);
-            }
-
+            applyTheme(savedThemeName); // Reaplica o tema (default, expressive, ou custom)
             lucide.createIcons();
         }
         
@@ -980,11 +1093,6 @@
             const savedThemeName = localStorage.getItem('theme_name') || 'default';
             applyTheme(savedThemeName);
             
-            const customColor = localStorage.getItem('customPrimaryColor');
-            if (customColor) {
-                applyCustomColor(customColor);
-            }
-            
             const radiusUI = localStorage.getItem('radiusUI') || '8px';
             applyUIRadius(parseInt(radiusUI, 10));
             
@@ -997,6 +1105,117 @@
             }
             applyAvatarRadius(avatarSliderValue);
         }
+
+        // --- NOVO: Funções do Editor de Tema ---
+
+        // Converte RGB (ex: "rgb(255, 0, 0)") para Hex (ex: "#ff0000")
+        function rgbToHex(rgb) {
+            if (!rgb || !rgb.startsWith('rgb')) return rgb; // Retorna se já for hex ou cor nomeada
+            let [r, g, b] = rgb.match(/\d+/g).map(Number);
+            return "#" + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? "0" + hex : hex;
+            }).join('');
+        }
+        
+        // Carrega os valores de cor ATUAIS (computados) para os inputs do editor
+        function loadThemeEditorValues() {
+            const htmlEl = document.documentElement;
+            const currentMode = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+            
+            // Carrega valores do Tema Claro
+            htmlEl.classList.remove('dark');
+            let lightStyle = getComputedStyle(htmlEl);
+            themeEditorConfig.variables.forEach(varName => {
+                const id = `editor-light-${varName}`;
+                const hexValue = rgbToHex(lightStyle.getPropertyValue(varName).trim());
+                document.getElementById(id).value = hexValue;
+                document.getElementById(`${id}-hex`).innerText = hexValue;
+            });
+
+            // Carrega valores do Tema Escuro
+            htmlEl.classList.add('dark');
+            let darkStyle = getComputedStyle(htmlEl);
+            themeEditorConfig.variables.forEach(varName => {
+                const id = `editor-dark-${varName}`;
+                const hexValue = rgbToHex(darkStyle.getPropertyValue(varName).trim());
+                document.getElementById(id).value = hexValue;
+                document.getElementById(`${id}-hex`).innerText = hexValue;
+            });
+            
+            // Restaura o modo (claro/escuro) original
+            if (currentMode === 'light') {
+                htmlEl.classList.remove('dark');
+            }
+        }
+
+        // Salva as cores do editor no localStorage e aplica o tema "custom"
+        function saveCustomTheme() {
+            themeEditorConfig.variables.forEach(varName => {
+                // Salva cores claras
+                const lightVal = document.getElementById(`editor-light-${varName}`).value;
+                localStorage.setItem(`custom-theme-light-${varName}`, lightVal);
+                
+                // Salva cores escuras
+                const darkVal = document.getElementById(`editor-dark-${varName}`).value;
+                localStorage.setItem(`custom-theme-dark-${varName}`, darkVal);
+            });
+            
+            localStorage.setItem('theme_name', 'custom');
+            applyTheme('custom');
+            
+            alert('Tema customizado salvo com sucesso!');
+            showView('admin');
+        }
+
+        // Limpa o tema customizado do localStorage e restaura o tema padrão
+        function restoreDefaultThemes() {
+            if (!confirm('Você tem certeza? Isso apagará seu tema customizado e restaurará o tema "Padrão (Gemini)".')) {
+                return;
+            }
+            
+            themeEditorConfig.variables.forEach(varName => {
+                localStorage.removeItem(`custom-theme-light-${varName}`);
+                localStorage.removeItem(`custom-theme-dark-${varName}`);
+            });
+            
+            removeCustomThemeStyles();
+            localStorage.setItem('theme_name', 'default');
+            applyTheme('default');
+            
+            alert('Tema padrão restaurado.');
+            showView('admin');
+        }
+
+        // Gera os inputs de cor no HTML quando a página carrega
+        function buildThemeEditorInputs() {
+            const lightContainer = document.getElementById('theme-editor-light');
+            const darkContainer = document.getElementById('theme-editor-dark');
+            
+            let lightHTML = '';
+            let darkHTML = '';
+
+            themeEditorConfig.variables.forEach(varName => {
+                const label = themeEditorConfig.labels[varName] || varName;
+                const lightId = `editor-light-${varName}`;
+                const darkId = `editor-dark-${varName}`;
+
+                lightHTML += `
+                    <label for="${lightId}">${label}</label>
+                    <input type="color" id="${lightId}" oninput="document.getElementById('${lightId}-hex').innerText = this.value">
+                    <span id="${lightId}-hex" class="color-hex-value">#000000</span>
+                `;
+                darkHTML += `
+                    <label for="${darkId}">${label}</label>
+                    <input type="color" id="${darkId}" oninput="document.getElementById('${darkId}-hex').innerText = this.value">
+                    <span id="${darkId}-hex" class="color-hex-value">#000000</span>
+                `;
+            });
+            
+            lightContainer.innerHTML = lightHTML;
+            darkContainer.innerHTML = darkHTML;
+        }
+
         
         // --- FUNÇÕES DE FONTE (NOVAS) ---
         function applyCustomFont(dataUrl) {
@@ -1056,67 +1275,81 @@
 
         // --- FUNÇÃO DE GERAR PDF (INSERIDA AQUI) ---
         function generateAndDownloadPDF(docData) {
-            if (typeof jspdf === 'undefined') {
+            const jspdfLib = window.jspdf || window.jspdf || window.jsPDF || jspdf;
+            if (!jspdfLib) {
                 console.error('jsPDF library is not loaded.');
                 alert('Erro ao carregar a biblioteca PDF. Não foi possível gerar o arquivo.');
                 return;
             }
-            const { jsPDF } = jspdf;
-            const doc = new jsPDF();
-            let y = 15; 
-            const margin = 15; 
+            // Suporta diferentes formas de exportação da lib UMD
+            const jsPDFClass = jspdfLib.jsPDF ? jspdfLib.jsPDF : jspdfLib;
+            const doc = new jsPDFClass();
+            let y = 15;
+            const margin = 15;
             const pageWidth = doc.internal.pageSize.getWidth();
             const usableWidth = pageWidth - 2 * margin;
             const col1_x = margin;
-            const col2_x = pageWidth / 2 + 5; 
+            const col2_x = pageWidth / 2 + 5;
 
             doc.setFontSize(9);
             doc.setTextColor(150);
             doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, pageWidth - margin, y, { align: 'right' });
             y += 10;
-            
+
             doc.setFontSize(16);
-            doc.setFont(undefined, 'bold'); 
-            doc.setTextColor(0); 
+            try { doc.setFont(undefined, 'bold'); } catch(e) {}
+            doc.setTextColor(0);
             doc.text("INFORME MÉDICO", pageWidth / 2, y, { align: 'center' });
-            doc.setFont(undefined, 'normal'); 
+            try { doc.setFont(undefined, 'normal'); } catch(e) {}
             y += 12;
 
             doc.setFontSize(10);
-            
-            doc.setFont(undefined, 'bold'); doc.text("Nº Atendimento:", col1_x, y);
-            doc.setFont(undefined, 'normal'); doc.text(docData.atendimento || 'N/A', col1_x + 35, y); 
-            
-            doc.setFont(undefined, 'bold'); doc.text("Data Criação:", col2_x, y);
-            doc.setFont(undefined, 'normal'); doc.text(docData.createdAt || 'N/A', col2_x + 30, y);
+
+            try { doc.setFont(undefined, 'bold'); } catch(e) {}
+            doc.text("Nº Atendimento:", col1_x, y);
+            try { doc.setFont(undefined, 'normal'); } catch(e) {}
+            doc.text(docData.atendimento || 'N/A', col1_x + 35, y);
+
+            try { doc.setFont(undefined, 'bold'); } catch(e) {}
+            doc.text("Data Criação:", col2_x, y);
+            try { doc.setFont(undefined, 'normal'); } catch(e) {}
+            doc.text(docData.createdAt || 'N/A', col2_x + 30, y);
             y += 7;
 
-            doc.setFont(undefined, 'bold'); doc.text("Paciente:", col1_x, y);
-            doc.setFont(undefined, 'normal'); doc.text(docData.paciente || 'N/A', col1_x + 35, y);
+            try { doc.setFont(undefined, 'bold'); } catch(e) {}
+            doc.text("Paciente:", col1_x, y);
+            try { doc.setFont(undefined, 'normal'); } catch(e) {}
+            doc.text(docData.paciente || 'N/A', col1_x + 35, y);
 
             if (currentUser && currentUser.telefone) {
-                doc.setFont(undefined, 'bold'); doc.text("Telefone (Usuário):", col2_x, y);
-                doc.setFont(undefined, 'normal'); doc.text(maskTelefone(currentUser.telefone), col2_x + 38, y);
+                try { doc.setFont(undefined, 'bold'); } catch(e) {}
+                doc.text("Telefone (Usuário):", col2_x, y);
+                try { doc.setFont(undefined, 'normal'); } catch(e) {}
+                doc.text(maskTelefone(currentUser.telefone), col2_x + 38, y);
             }
             y += 7;
 
-            doc.setFont(undefined, 'bold'); doc.text("Médico Solicitante:", col1_x, y);
-            doc.setFont(undefined, 'normal'); doc.text(docData.medico || 'N/A', col1_x + 35, y);
+            try { doc.setFont(undefined, 'bold'); } catch(e) {}
+            doc.text("Médico Solicitante:", col1_x, y);
+            try { doc.setFont(undefined, 'normal'); } catch(e) {}
+            doc.text(docData.medico || 'N/A', col1_x + 35, y);
 
-            doc.setFont(undefined, 'bold'); doc.text("Gerado por:", col2_x, y);
-            doc.setFont(undefined, 'normal'); doc.text(docData.createdBy || 'N/A', col2_x + 30, y);
+            try { doc.setFont(undefined, 'bold'); } catch(e) {}
+            doc.text("Gerado por:", col2_x, y);
+            try { doc.setFont(undefined, 'normal'); } catch(e) {}
+            doc.text(docData.createdBy || 'N/A', col2_x + 30, y);
             y += 10;
-            
-            doc.setDrawColor(200, 200, 200); 
+
+            doc.setDrawColor(200, 200, 200);
             doc.line(margin, y, pageWidth - margin, y);
             y += 10;
 
             doc.setFontSize(11);
-            doc.setFont(undefined, 'bold');
+            try { doc.setFont(undefined, 'bold'); } catch(e) {}
             doc.text("Laudo / Observações:", margin, y);
             y += 7;
             doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
+            try { doc.setFont(undefined, 'normal'); } catch(e) {}
             const laudoLines = doc.splitTextToSize(docData.laudo || 'Nenhum laudo informado.', usableWidth);
             doc.text(laudoLines, margin, y);
             y += laudoLines.length * 5 + 10; 
@@ -1130,14 +1363,14 @@
                     doc.setDrawColor(220, 220, 220); 
                     doc.line(margin, y, pageWidth - margin, y);
                     y += 10;
-                 }
+                }
 
                 try {
                     doc.setFontSize(11);
-                    doc.setFont(undefined, 'bold');
+                    try { doc.setFont(undefined, 'bold'); } catch(e) {}
                     doc.text("Anexo:", margin, y);
                     y += 7;
-                    doc.setFont(undefined, 'normal');
+                    try { doc.setFont(undefined, 'normal'); } catch(e) {}
 
                     const imgProps = doc.getImageProperties(docData.image);
                     let imgWidth = usableWidth * 0.75; 
@@ -1150,7 +1383,9 @@
                     }
                     const imgX = (pageWidth - imgWidth) / 2; 
                     
-                    doc.addImage(docData.image, 'JPEG', imgX, y, imgWidth, imgHeight);
+                    // Detecta formato a partir do data URL
+                    const mime = (typeof docData.image === 'string' && docData.image.indexOf('data:image/png') === 0) ? 'PNG' : 'JPEG';
+                    doc.addImage(docData.image, mime, imgX, y, imgWidth, imgHeight);
                     y += imgHeight + 10; 
                 } catch (error) {
                     console.error("Erro ao adicionar imagem ao PDF:", error);
@@ -1162,12 +1397,12 @@
             }
             
             const pageHeight = doc.internal.pageSize.getHeight();
-section-6, section-8,
+
             doc.setFontSize(8);
             doc.setTextColor(150); 
             doc.text(`Sistema de Informes Médicos - ${new Date().getFullYear()}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
 
-            const filename = `Informe_${docData.paciente.replace(/ /g, '_')}_${docData.id}.pdf`;
+            const filename = `Informe_${(docData.paciente || 'Paciente').replace(/ /g, '_')}_${docData.id || Date.now()}.pdf`;
             doc.save(filename);
         }
 
@@ -1195,14 +1430,24 @@ section-6, section-8,
                 applyTheme(localStorage.getItem('theme_name') || 'default');
             }
             if (viewName === 'reports') renderReportsTable();
+            // NOVO: Carrega cores ao abrir o editor
+            if (viewName === 'theme-editor') {
+                loadThemeEditorValues();
+            }
             
             lucide.createIcons();
         }
 
+        // ###########################################################
+        // ##              FUNÇÃO DE LOGIN CORRIGIDA                ##
+        // ###########################################################
         function handleLogin(event) {
             event.preventDefault(); 
-            const cpf = document.getElementById('login-cpf').value.replace(/[\.-]/g, '');
-            const matricula = document.getElementById('login-matricula').value;
+            
+            // CORREÇÃO 1: Adicionado .trim() para remover espaços em branco
+            const cpf = document.getElementById('login-cpf').value.trim().replace(/[\.-]/g, '');
+            const matricula = document.getElementById('login-matricula').value.trim();
+            
             const user = users.find(u => u.cpf === cpf && u.matricula === matricula);
 
             if (user && user.active) {
@@ -1215,7 +1460,6 @@ section-6, section-8,
                     document.getElementById('admin-button').style.display = 'none';
                 }
                 
-                // NOVO: Mostrar DevTools apenas se o usuário tiver permissão
                 if (currentUser.hasDevTools) {
                     document.getElementById('devtools-icon').style.display = 'flex';
                 }
@@ -1226,6 +1470,10 @@ section-6, section-8,
                 alert('CPF, matrícula inválidos ou usuário inativo!');
             }
         }
+        // ###########################################################
+        // ##                FIM DA CORREÇÃO DE LOGIN               ##
+        // ###########################################################
+
         function handleLogout() {
             currentUser = null;
             document.getElementById('login-form').reset(); 
@@ -1695,7 +1943,13 @@ section-6, section-8,
         // --- INICIALIZAÇÃO ---
         
         document.addEventListener('DOMContentLoaded', () => {
+            // Constrói os inputs do editor de tema
+            buildThemeEditorInputs();
+            
             document.getElementById('login-form').addEventListener('submit', handleLogin);
+            
+            // CORREÇÃO 2: Adiciona máscara ao CPF do Login
+            document.getElementById('login-cpf').addEventListener('input', (e) => { e.target.value = maskCPF_CNPJ(e.target.value); });
             
             document.getElementById('profile-upload-input').addEventListener('change', handleProfileUpload);
             document.getElementById('document-upload').addEventListener('change', handleImageUpload);
@@ -1741,6 +1995,10 @@ section-6, section-8,
             document.getElementById('font-apply-btn').addEventListener('click', handleFontUpload);
             document.getElementById('font-restore-btn').addEventListener('click', restoreDefaultFont);
             
+            // NOVO: Listeners do Editor de Tema
+            document.getElementById('theme-editor-save').addEventListener('click', saveCustomTheme);
+            document.getElementById('theme-editor-restore').addEventListener('click', restoreDefaultThemes);
+            
             // Listeners (DevTools)
             document.getElementById('devtools-icon').addEventListener('click', toggleDevTools);
             document.getElementById('devtools-overlay').addEventListener('click', toggleDevTools);
@@ -1749,11 +2007,7 @@ section-6, section-8,
             document.getElementById('dev-theme-btn-default').addEventListener('click', () => applyTheme('default'));
             document.getElementById('dev-theme-btn-expressive').addEventListener('click', () => applyTheme('expressive'));
 
-            document.getElementById('dev-color-picker').addEventListener('input', (e) => applyCustomColor(e.target.value));
-            document.getElementById('dev-color-reset').addEventListener('click', () => {
-                resetCustomColor();
-                applyTheme(localStorage.getItem('theme_name') || 'default');
-            });
+            // (Listeners do seletor de cor primária foram removidos)
 
             document.getElementById('dev-radius-ui').addEventListener('input', (e) => applyUIRadius(e.target.value));
             document.getElementById('dev-radius-avatar').addEventListener('input', (e) => applyAvatarRadius(e.target.value));
